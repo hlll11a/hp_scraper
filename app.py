@@ -183,7 +183,7 @@ if hp == "ビューティー":
     link = f'[対象ページ]("https://beauty.hotpepper.jp/{genre_cd}/svcSA/{area_cd}/salon/PN1.html")'
     st.markdown(link, unsafe_allow_html=True)
     
-    disp_num(store_num, max_page)
+    to_page = disp_num(store_num, max_page)
 
     if st.button("取得開始"):
         st.write("開始")
