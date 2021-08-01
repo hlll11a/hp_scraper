@@ -6,6 +6,9 @@ import time
 import csv
 import pandas as pd
 import base64
+import webbrowser
+
+
 
 def scp_hpg(area_cd:str, page_num:str) -> list:
     out = []
@@ -136,6 +139,10 @@ if hp == "グルメ":
     soup = BeautifulSoup(res.text, "html.parser")
     store_num = soup.find("span", class_="fcLRed bold fs18 padLR3").text # 店舗数
     max_page = soup.find("li", class_="lh27").text.rstrip("ページ").split("/")[1] # 最大ページ数
+    url = f"https://www.hotpepper.jp/SA11/{area_cd}/lst/bgn1/"
+
+    if st.button('1ページ目を開く'):
+        webbrowser.open_new_tab(url)
     to_page = disp_num(store_num, max_page) # 取得するページ数
 
     if st.button("取得開始"):
@@ -180,8 +187,10 @@ if hp == "ビューティー":
         .rstrip("ページ")
         .split("/")[1]
     )
-    link = f'[対象ページ]("https://beauty.hotpepper.jp/{genre_cd}/svcSA/{area_cd}/salon/PN1.html")'
-    st.markdown(link, unsafe_allow_html=True)
+    url = f'https://beauty.hotpepper.jp/{genre_cd}/svcSA/{area_cd}/salon/PN1.html'
+
+    if st.button('1ページ目を開く'):
+        webbrowser.open_new_tab(url)
     
     to_page = disp_num(store_num, max_page)
 
