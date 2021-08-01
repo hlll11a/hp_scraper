@@ -6,11 +6,9 @@ import time
 import csv
 import pandas as pd
 import base64
-import webbrowser
 
 
-
-def scp_hpg(area_cd:str, page_num:str) -> list:
+def scp_hpg(area_cd: str, page_num: str) -> list:
     out = []
     for i in range(1, page_num + 1):
         res = requests.get(f"https://www.hotpepper.jp/SA11/{area_cd}/lst/bgn{i}/")
@@ -53,9 +51,9 @@ def scp_hpg(area_cd:str, page_num:str) -> list:
     return out
 
 
-def scp_hpb(area_cd:str, page_num:str, cat:str) -> list:
+def scp_hpb(area_cd: str, page_num: str, cat: str) -> list:
     out = []
-    for i in range(1, page_num + 1):        
+    for i in range(1, page_num + 1):
         res = requests.get(
             f"https://beauty.hotpepper.jp/{cat}/svcSA/{area_cd}/salon/PN{i}.html"
         )
@@ -107,7 +105,7 @@ def scp_hpb(area_cd:str, page_num:str, cat:str) -> list:
     return out
 
 
-def disp_num(store_num:str, max_page:str) -> int:
+def disp_num(store_num: str, max_page: str) -> int:
     st.text(f"合計{store_num}店舗 {max_page}ページ")
     to_page = st.number_input(
         "なんページめまで取得するか", step=1, min_value=1, max_value=int(max_page)
@@ -120,11 +118,11 @@ hp = st.sidebar.selectbox("グルメ or ビューティー", ("グルメ", "ビ�
 
 
 if hp == "グルメ":
-    
+
     # 東京トップページ
     res = requests.get(f"https://www.hotpepper.jp/SA11/")
     soup = BeautifulSoup(res.text, "html.parser")
-    
+
     # エリア名の辞書を作成
     area2cd = {}
     area_tag_lst = soup.find("div", class_="areaSA11").find_all("li")
@@ -137,13 +135,11 @@ if hp == "グルメ":
 
     res = requests.get(f"https://www.hotpepper.jp/SA11/{area_cd}/lst/bgn1/")
     soup = BeautifulSoup(res.text, "html.parser")
-    store_num = soup.find("span", class_="fcLRed bold fs18 padLR3").text # 店舗数
-    max_page = soup.find("li", class_="lh27").text.rstrip("ページ").split("/")[1] # 最大ページ数
+    store_num = soup.find("span", class_="fcLRed bold fs18 padLR3").text  # 店舗数
+    max_page = soup.find("li", class_="lh27").text.rstrip("ページ").split("/")[1]  # 最大ページ数
     url = f"https://www.hotpepper.jp/SA11/{area_cd}/lst/bgn1/"
 
-    if st.button('1ページ目を開く'):
-        webbrowser.open_new_tab(url)
-    to_page = disp_num(store_num, max_page) # 取得するページ数
+    to_page = disp_num(store_num, max_page)  # 取得するページ数
 
     if st.button("取得開始"):
         st.write("開始")
@@ -157,7 +153,7 @@ if hp == "グルメ":
         st.markdown(linko, unsafe_allow_html=True)
 
 if hp == "ビューティー":
-    
+
     # 東京トップページ
     res = requests.get(f"https://beauty.hotpepper.jp/nail/svcSA/")
 
@@ -187,11 +183,8 @@ if hp == "ビューティー":
         .rstrip("ページ")
         .split("/")[1]
     )
-    url = f'https://beauty.hotpepper.jp/{genre_cd}/svcSA/{area_cd}/salon/PN1.html'
+    url = f"https://beauty.hotpepper.jp/{genre_cd}/svcSA/{area_cd}/salon/PN1.html"
 
-    if st.button('1ページ目を開く'):
-        webbrowser.open_new_tab(url)
-    
     to_page = disp_num(store_num, max_page)
 
     if st.button("取得開始"):
