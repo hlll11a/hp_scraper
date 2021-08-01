@@ -131,6 +131,7 @@ if hp == "グルメ":
     area_cd = area2cd[area]
 
     # 選択したエリアの一覧1ページ目
+
     res = requests.get(f"https://www.hotpepper.jp/SA11/{area_cd}/lst/bgn1/")
     soup = BeautifulSoup(res.text, "html.parser")
     store_num = soup.find("span", class_="fcLRed bold fs18 padLR3").text # 店舗数
@@ -151,7 +152,7 @@ if hp == "グルメ":
 if hp == "ビューティー":
     
     # 東京トップページ
-    res = requests.get(f"https://beauty.hotpepper.jp/svcSA/")
+    res = requests.get(f"https://beauty.hotpepper.jp/nail/svcSA/")
 
     # ジャンル選択 (ヘアサロン以外)
     genre_dic = {"ネイル・まつげサロン": "nail", "リラクサロン": "relax", "エステサロン": "esthe"}
@@ -179,7 +180,10 @@ if hp == "ビューティー":
         .rstrip("ページ")
         .split("/")[1]
     )
-    to_page = disp_num(store_num, max_page)
+    link = f'[対象ページ]("https://beauty.hotpepper.jp/{genre_cd}/svcSA/{area_cd}/salon/PN1.html")'
+    st.markdown(link, unsafe_allow_html=True)
+    
+    disp_num(store_num, max_page)
 
     if st.button("取得開始"):
         st.write("開始")
