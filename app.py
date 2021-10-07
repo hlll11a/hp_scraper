@@ -8,9 +8,9 @@ import pandas as pd
 import base64
 
 
-def scp_hpg(area_cd: str, page_num: str) -> list:
+def scp_hpg(area_cd: str, from_page_num: int,page_num: int) -> list:
     out = []
-    for i in range(1, page_num + 1):
+    for i in range(from_page_num, page_num + 1):
         res = requests.get(f"https://www.hotpepper.jp/SA11/{area_cd}/lst/bgn{i}/")
         soup = BeautifulSoup(res.text, "html.parser")
         page_lst = json.loads(
@@ -51,9 +51,9 @@ def scp_hpg(area_cd: str, page_num: str) -> list:
     return out
 
 
-def scp_hpb(area_cd: str, page_num: str, cat: str) -> list:
+def scp_hpb(area_cd: str, from_page_num:int,page_num: int, cat: str) -> list:
     out = []
-    for i in range(1, page_num + 1):
+    for i in range(from_page_num, page_num + 1):
         res = requests.get(
             f"https://beauty.hotpepper.jp/{cat}/svcSA/{area_cd}/salon/PN{i}.html"
         )
@@ -107,11 +107,14 @@ def scp_hpb(area_cd: str, page_num: str, cat: str) -> list:
 
 def disp_num(store_num: str, max_page: str) -> int:
     st.text(f"合計{store_num}店舗 {max_page}ページ")
-    to_page = st.number_input(
-        "なんページめまで取得するか", step=1, min_value=1, max_value=int(max_page)
+    from_page = st.number_input(
+        "なんページめから取得するか", step=1, min_value=1, max_value=int(max_page)
     )
-    st.text(f"約{20*to_page*2}秒かかります")
-    return to_page
+    to_page = st.number_input(
+        "なんページめまで取得するか", step=1, min_value=from_page, max_value=int(max_page)
+    )
+    st.text(f"約{20*(to_page - from_page)*2}秒かかります")
+    return from_page,to_page
 
 
 hp = st.sidebar.selectbox("グルメ or ビューティー", ("グルメ", "ビューティー"))
@@ -139,11 +142,11 @@ if hp == "グルメ":
     max_page = soup.find("li", class_="lh27").text.rstrip("ページ").split("/")[1]  # 最大ページ数
     url = f"https://www.hotpepper.jp/SA11/{area_cd}/lst/bgn1/"
 
-    to_page = disp_num(store_num, max_page)  # 取得するページ数
+    from_page,to_page = disp_num(store_num, max_page)  # 取得するページ数
 
     if st.button("取得開始"):
         st.write("開始")
-        out = scp_hpg(area_cd, to_page)
+        out = scp_hpg(area_cd, from_page, to_page)
         st.write("完了")
         df_download = pd.DataFrame(out)
         df_download.columns = ["名前", "URL", "エリア", "ジャンル", "電話番号"]
@@ -185,11 +188,11 @@ if hp == "ビューティー":
     )
     url = f"https://beauty.hotpepper.jp/{genre_cd}/svcSA/{area_cd}/salon/PN1.html"
 
-    to_page = disp_num(store_num, max_page)
+    from_page,to_page = disp_num(store_num, max_page)
 
     if st.button("取得開始"):
         st.write("開始")
-        out = scp_hpb(area_cd, to_page, genre_cd)
+        out = scp_hpb(area_cd, from_page, to_page, genre_cd)
         st.write("完了")
         df_download = pd.DataFrame(out)
         df_download.columns = ["名前", "URL", "ジャンル", "電話番号"]
